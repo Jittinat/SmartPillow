@@ -25,9 +25,7 @@ class Test : Service(), LifecycleObserver {
 
     val NOTIFICATION_CHANNEL_ID = "10001"
     private val default_notification_channel_id = "default"
-    //var timer: Timer?
     private var timer: CountDownTimer? = null
-    //var timer: Timer
     lateinit var timerTask: TimerTask
     internal var TAG = "Timers"
     internal var Your_X_SECS = 1
@@ -39,7 +37,6 @@ class Test : Service(), LifecycleObserver {
     var newr10mins = "4"
     var newr5mins = "4"
     var newcur = "4"
-    //var sts = "hi"
 
     override fun onBind(arg0: Intent): IBinder? {
         return null
@@ -50,8 +47,6 @@ class Test : Service(), LifecycleObserver {
         super.onStartCommand(intent, flags, startId)
 
         startTimer()
-        //isActivityVisible()
-        //count--
         return START_STICKY
     }
 
@@ -97,8 +92,7 @@ class Test : Service(), LifecycleObserver {
         initializeTimerTask()
 
         //schedule the timer, after the first 5000ms the TimerTask will run every 10000ms
-        timer.schedule(timerTask, 0, (Your_X_SECS * 60000).toLong()) //will change to every 2 min is 120000 ms
-        //timer.schedule(timerTask, 5000,1000); //
+        timer.schedule(timerTask, 0, (Your_X_SECS * 120000).toLong()) //will change to every 2 min is 120000 ms
     }
 
     fun stoptimertask() {
@@ -119,17 +113,13 @@ class Test : Service(), LifecycleObserver {
     }
 
     fun callApi() {
-        //val url = "http://atilal.com/"
-        val url = "http://35.240.207.155:8080/"
-        //val url = "https://jsonplaceholder.typicode.com/"
+        val url = "http://34.87.85.156:8080/"               //Server url
         val restAPI = PillowAPI(url)
         val deviceService = restAPI.buildService(PillowService::class.java)
         val requestCall = deviceService.getProperties()
 
         requestCall.enqueue(object : Callback<ResponseBody> {
             override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
-                //Toast.makeText(applicationContext, "Error Occurred${t?.message}", Toast.LENGTH_LONG) .show()
-                //count++
                 callApi()
             }
 
@@ -144,17 +134,17 @@ class Test : Service(), LifecycleObserver {
                 newr5mins = dt.result5Mins
                 newcur = dt.predictCurrent
 
-                if (count < 60) {                           //will change to 60
+                if (count < 30) {                           //will change to 60
                     Log.d("count", count.toString())
                     if (r10mins != "4") {                //check first time?
                         if (cur != newcur) {
                             if (newr5mins == newcur) {        //real change
                                 count = 0
                                 if (cur == "3" || cur == "4") {     //start sleep
-                                    creatnotification("sleep",newr10mins,newcur)
+                                    creatnotification("sleep",r5mins,newcur)
                                     checksts(newcur, isActivityVisible())  //send cur = 3 or 4
                                 } else {
-                                    creatnotification("sleep",newr10mins,newcur)
+                                    creatnotification("sleep",r5mins,newcur)
                                     checksts(
                                         newcur,
                                         isActivityVisible()
@@ -166,16 +156,16 @@ class Test : Service(), LifecycleObserver {
                                 setvalue()
                             }
                         } else {                               //real change
-                            if (newr5mins != r5mins && newr5mins == newcur && r10mins != newr5mins) {
+                            if (newr5mins != r5mins && newr5mins == newcur) {
                                 count = 0
                                 if (cur == "3" || cur == "4") {
-                                    creatnotification("sleep",r10mins,newcur)
+                                    creatnotification("sleep",r5mins,newcur)
                                     checksts(
                                         newcur,
                                         isActivityVisible()
                                     )  //send cur = 3 or 4
                                 } else {
-                                    creatnotification("sleep",r10mins,newcur)
+                                    creatnotification("sleep",r5mins,newcur)
                                     checksts(
                                         newcur,
                                         isActivityVisible()
@@ -195,14 +185,14 @@ class Test : Service(), LifecycleObserver {
                     }
                 } else {                                        //more than 2 hours
                     //TODO(CHANGE POSTURE THEN COUNT = 0)
-                    if (count == 60) {                            //2 hours
+                    if (count == 30) {                            //2 hours
                         creatnotification("2 hours",newr10mins,newcur)
                         count++
                         Log.d("count", count.toString())
                     } else if (cur != newcur) {                    //more than 2 hours check change posture
                         if (newr5mins == newcur) {        //real change
                             count = 0
-                            creatnotification("sleep",newr10mins,newcur)
+                            creatnotification("sleep",r5mins,newcur)
                             checksts(newcur, isActivityVisible())  //send cur not 3
                             setvalue()
                         } else {                          //not sure
@@ -211,7 +201,7 @@ class Test : Service(), LifecycleObserver {
                             Log.d("count", count.toString())
                         }
                     } else {                               //real change
-                        if (newr5mins != r5mins && newr5mins == newcur && r10mins != newr5mins) {
+                        if (newr5mins != r5mins && newr5mins == newcur) {
                             count = 0
                             creatnotification("sleep",r5mins,newcur)
                             checksts(newcur, isActivityVisible())  //send cur not 3
@@ -228,61 +218,12 @@ class Test : Service(), LifecycleObserver {
         })
     }
 /////////////////////////////////////////////////////////////////////////////////////// Real used
-/////////////////////////////////////////////////////////////////////////////////////////  NOT USED
-//                            if (cur == "3") {                 //seem not occur?!!!
-//                                creatnotification("start")
-//                                checksts(cur,isActivityVisible())  //send cur not 3
-//                            } else {
-//                                creatnotification(newcur)
-//                                checksts(cur,isActivityVisible())  //send cur not 3
-//                            }
-//                            setvalue()
-//                        } else if (newcur == "3") {           //status = 3 not count //seem not occur?!!!!
-//                            count = 0
-//                            setvalue()
-//                        } else {                          //not status 3 and not change
-//                            count++
-//                            setvalue()
-//                        }
-//                    }
-//                }
-//////////////////////////////////////////////////////////////////////////////////////// NOT USED
-/////////////////////////////////////////////////////////////////////////////////////// Used for test
-//                sts = dt.status
-//                //checksts(sts,isActivityVisible())
-////                if(isActivityVisible() != "STARTED"){
-////                    count++
-////                }
-//                count++
-//                Log.d("count", count.toString())
-//                if (sts == "positive") {
-//                    //Toast.makeText(applicationContext, dt.message, Toast.LENGTH_SHORT).show()
-//                    creatnotification(sts)
-//                }
-//            }
-//        })
-//    }
-/////////////////////////////////////////////////////////////////////////////////////// Used for test
-//////////////////////////////////////////////////////////////////////////////////////// NOT USED
-//                if (count >= 3){
-//                    count = 0
-//                    stoptimertask()
-//                    creatnotification(sts)
-//                    startTimer()
-//                }
-                //showdata(dt)
-                //val cookiesText = Gson().fromJson(result, Data::class.java)
-                //textView.text = "      Result : " +dt
-                //Toast.makeText("Test",Toast.LENGTH_SHORT).show()
-//////////////////////////////////////////////////////////////////////////////////////// NOT USED
 
-    fun creatnotification(sts: String,newr10: String,newc: String) {
-        Log.d("Status in noti", sts)
+    fun creatnotification(sts: String,newr5: String,newc: String) {
         val mNotificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val mBuilder =
             NotificationCompat.Builder(applicationContext, default_notification_channel_id)
-        //mBuilder.setContentTitle("My Notification")
 
         val drawable = ContextCompat.getDrawable(this, R.drawable.day)
         val bitmap = (drawable as BitmapDrawable).bitmap
@@ -301,7 +242,7 @@ class Test : Service(), LifecycleObserver {
             "sleep" ->{
                 when (newc) {
                     "0" ->  {
-                        when (newr10) {
+                        when (newr5) {
                             "3" ->  {
                                 mBuilder.setContentTitle("Start lay head")
                                 mBuilder.setContentText("Patient is start sleeping in supine posture")
@@ -309,7 +250,7 @@ class Test : Service(), LifecycleObserver {
                             }
                             else -> {
                                 mBuilder.setContentTitle("Lateral to Supine")
-                                when (newr10){
+                                when (newr5){
                                     "1" -> mBuilder.setContentText("Patient is change from left lateral posture to supine posture")
                                     "2" -> mBuilder.setContentText("Patient is change from right lateral posture to supine posture")
                                 }
@@ -323,7 +264,7 @@ class Test : Service(), LifecycleObserver {
                         mBuilder.setLargeIcon(bitmap2)
                     }
                     "1" -> {
-                        when (newr10) {
+                        when (newr5) {
                             "0" -> {
                                 mBuilder.setContentTitle("Supine to Lateral")
                                 mBuilder.setContentText("Patient is change from supine posture to left lateral posture")
@@ -342,7 +283,7 @@ class Test : Service(), LifecycleObserver {
                         }
                     }
                     "2" -> {
-                        when (newr10) {
+                        when (newr5) {
                             "0" -> {
                                 mBuilder.setContentTitle("Supine to Lateral")
                                 mBuilder.setContentText("Patient is change from supine posture to right lateral posture")
@@ -396,13 +337,9 @@ class Test : Service(), LifecycleObserver {
     fun checksts(sts: String,isActive: String){
         if(isActive != "CREATED" || isActive == "STARTED") {
             if(sts == "positive"){
-//            if (sts == "3" || sts == "4") {                                //"3" mean no patient on pillow
-//                var intent = Intent(this, TestUi::class.java)
-//                startActivity(intent)
                 var intent3 = Intent(this, MainActivity::class.java).putExtra("status",1)
                 startActivity(intent3)
             }else{                                                  //not 3 mean hava patient on pillow
-                //var intent2 = Intent(this, TestUi2::class.java)
                 var intent2 = Intent(this, MainActivity::class.java).putExtra("status",2)
                 startActivity(intent2)
             }

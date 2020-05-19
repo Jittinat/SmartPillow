@@ -7,9 +7,6 @@ import android.util.Log
 import android.view.View
 import android.app.ActivityManager
 import android.content.Context
-import android.content.Context.ACTIVITY_SERVICE
-import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -111,17 +108,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getapi(){
-        //val url = "http://atilal.com/"
-        val url = "http://35.240.207.155:8080/"
-        //val url = "https://jsonplaceholder.typicode.com/"
+        val url = "http://34.87.85.156:8080/"               //Server url
         val restAPI = PillowAPI(url)
         val deviceService = restAPI.buildService(PillowService::class.java)
         val requestCall = deviceService.getProperties()
 
         requestCall.enqueue(object: Callback<ResponseBody> {
             override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
-//                Toast.makeText(applicationContext, "Error Occurred jaaaa${t?.message}", Toast.LENGTH_LONG)
-//                    .show()
                 Log.d("mainpage","api error")
             }
 
